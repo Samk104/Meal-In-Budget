@@ -1,0 +1,85 @@
+
+        body, html {
+            margin: 0;
+            padding: 0;
+        }
+
+        .section {
+            height: 100vh;
+            width: 33.33%;
+            float: left;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #section1 {
+            background-image: url(../../recipe.jpg);
+            background-size: cover;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            display: flex;
+            flex-direction: column;
+            /* #588bde */
+        }
+        #section2 {
+            background-image: url(../../web.jpg);
+            background-size:contain;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            display: flex;
+            flex-direction: column;
+           
+        }
+        #section3 {
+            background-image: url(../../store.jpg);
+            background-size: cover;
+        }
+        .hidden {
+            display: none;
+        }
+        .tick {
+            color: white;
+            font-size: 50px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        input[type="text"] {
+            border: 3px solid green;
+            border-radius: 10px;
+            text-align: center;
+            width: 80%;  
+            height: 30px;  
+            font-size: 16px;  
+            padding: 10px;
+        }
+
+        input[type="submit"] {
+            width: 50%; 
+            height: 40px;  
+            font-size: 16px;  
+            background-color: #4CAF50;  /* This is a green color, adjust as needed */
+            color: white;  /* This is the text color, adjust as needed */
+            border: none;
+            border-radius: 5px;  /* This makes the button corners rounded, adjust as needed */
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        button {
+            width: 50%; 
+            height: 40px;  
+            font-size: 16px;  
+            background-color: #4CAF50;  /* This is a green color, adjust as needed */
+            color: white;  /* This is the text color, adjust as needed */
+            border: none;
+            border-radius: 5px;  /* This makes the button corners rounded, adjust as needed */
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;  /* This changes the button color when you hover over it, adjust as needed */
+        }
