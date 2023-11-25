@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Results</title>
+</head>
+<body>
+    <h1>Results</h1>
+    <h1>{{dish}}</h1>
+    <h2>Ingredients:</h2>
+    <ul>
+        {% for ingredient in ingredients %}
+            <li>{{ ingredient }}</li>
+        {% endfor %}
+    </ul>
+    <h2>Costs:</h2>
+    <ul>
+        {% for store, cost in net_store_cost.items() %}
+            <li>The average price at {{ store }} for your dish is ${{ cost }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

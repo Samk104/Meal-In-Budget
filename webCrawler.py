@@ -12,7 +12,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 import collections
 import os
 import json
-from flask import Flask, request, render_template, flash
+from flask import Flask, request, render_template
 
 
 app = Flask(__name__)
@@ -20,7 +20,6 @@ app.secret_key = "MMMMMM99999"
 
 @app.route("/")
 def index():
-    flash("Whats your name?")
     return render_template("index.html")
 
 
@@ -106,7 +105,7 @@ def get_price(ingredient, store, zipcode, net_store_cost, visited_urls):
                 items.append(float(spans[2].text +"." +spans[3].text))
 
         # Print the list of texts
-        itemprice += min(items)
+        itemprice = round(min(items),2)
         print(f"Best price for {ingredient.replace('+',' ')} at Walmart is {itemprice}")
         
         with lock:
@@ -141,7 +140,7 @@ def get_price(ingredient, store, zipcode, net_store_cost, visited_urls):
             if sup:
                 price = span.text + sup.text
                 prices.append(float(price))
-        minprice = min(prices)
+        minprice = round(min(prices),2)
         print(f"Best price found for {ingredient.replace('+',' ')} at {store} is {minprice}\n")
         with lock:
         # update the dictionary
@@ -190,7 +189,7 @@ def get_price(ingredient, store, zipcode, net_store_cost, visited_urls):
             items.append(float(pr))
         
         
-        itemprice = min(items)
+        itemprice = round(min(items),2)
         print(f"Best price for {ingredient.replace('+',' ')} at safeway is {itemprice}")
         with lock:
         # update the dictionary
@@ -244,7 +243,7 @@ def get_price(ingredient, store, zipcode, net_store_cost, visited_urls):
                 items.append(price)
         
         
-        itemprice = min(items)
+        itemprice = round(min(items),2)
         print(f"Best price for {ingredient.replace('+',' ')} at Sam's Club is {itemprice}")
         
         with lock:
@@ -277,21 +276,19 @@ def save_visited_urls(urls):
 @app.route('/submit', methods=['POST','GET'])
 def submit():
     dish = str(request.form['dish'])
-    flash("Hi "+ dish)
-    # dish = input("Enter a dish: ")
-   
+
     # zipcode = request.form.get('zipcode')
     zipcode = 30324
     ingredients = get_recipe(dish)
     stores = ["walmart" , "safeway", "samsclub","kroger"]
-  
+
     visited_urls = load_visited_urls()   # Loading visited url's
-    
+
     threads = []
     thread_id = 1
-    
+
     net_store_cost = collections.defaultdict(list)
-    
+
     for ingredient in ingredients:
         for store in stores:
             thread = threading.Thread(target=get_price, args=(ingredient, store, zipcode, net_store_cost,visited_urls), name=str(thread_id))
@@ -301,13 +298,13 @@ def submit():
             thread_id += 1
     for thread in threads:
         thread.join()
-    
+
     print(net_store_cost)
     for s,c in net_store_cost.items():
         net_store_cost[s] = sum(c)
-    
+
     print(net_store_cost)
-    return render_template("index.html")
+    return render_template("results.html", dish=dish, ingredients=ingredients, net_store_cost=net_store_cost)
 
 
 
