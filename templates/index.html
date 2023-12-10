@@ -43,7 +43,7 @@
          <div id="tick2" class="hidden tick">✔</div>
          </div>
 
-    <form action="submit" method="post">
+    <form action="submit" id="recipe-form" method="post">
     <div id="section3" class="section">
         {% for message in get_flashed_messages() %}
             <p>{{message}}</p>

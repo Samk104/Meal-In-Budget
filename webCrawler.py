@@ -8,15 +8,26 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
+
 from webdriver_manager.chrome import ChromeDriverManager
+from msedge.selenium_tools import Edge, EdgeOptions
+from selenium.webdriver.edge.service import Service
 import collections
 import os
 import json
 from flask import Flask, request, render_template
+from flask import session,redirect,url_for,copy_current_request_context
+from threading import Thread
+from flask import jsonify
+
 
 
 app = Flask(__name__)
 app.secret_key = "MMMMMM99999"
+
+
+
+
 
 @app.route("/")
 def index():
@@ -55,7 +66,16 @@ def get_recipe(dish):
         ing.append(ingredient)
     print(ing)
 
-    return ing
+
+    if recipe_link:
+        # Find the img tag inside the figure
+        img = recipe_link.find_next('img')
+
+        if img:
+            # Extract the 'data-src' or 'src' attribute, whichever is present
+            image = img.get('data-src') if 'data-src' in img.attrs else img.get('src')
+            print(image)
+    return ing, image
 
 
 
@@ -67,21 +87,29 @@ def get_price(ingredient, store, zipcode, net_store_cost, visited_urls):
         itemprice = 0
 
 
-        chrome_options = webdriver.ChromeOptions()
+        # chrome_options = webdriver.ChromeOptions()
 
-        chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
-        chrome_options.add_experimental_option('useAutomationExtension', False)
-        chrome_options.add_argument('lang=zh-CN,zh,zh-TW,en-US,en')
-        chrome_options.add_argument('--disable-gpu')
-        chrome_options.add_argument("disable-blink-features=AutomationControlled")
+        # chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
+        # chrome_options.add_experimental_option('useAutomationExtension', False)
+        # chrome_options.add_argument('lang=zh-CN,zh,zh-TW,en-US,en')
+        # chrome_options.add_argument('--disable-gpu')
+        # chrome_options.add_argument("disable-blink-features=AutomationControlled")
+        # driver = webdriver.Chrome(options=chrome_options)
 
-        driver = webdriver.Chrome(options=chrome_options)
 
+        edge_options = webdriver.EdgeOptions()
+        edge_options.use_chromium = True
+        edge_options.add_argument('lang=zh-CN,zh,zh-TW,en-US,en')
+        edge_options.add_argument('--disable-gpu')
+        edge_options.add_argument("disable-blink-features=AutomationControlled")
+        edge_options.add_argument("--window-size=0,0")
+        driver = webdriver.Edge(options=edge_options)
+        driver.set_window_position(2200, 0)
         # Replace with the URL you want to visit
         url = "https://www." + store + ".com/search/?query=" + ingredient
         driver.get(url)
 
-        time.sleep(8)
+        time.sleep(5)
 
         # Get the HTML content of the page
         html = driver.page_source
@@ -98,16 +126,13 @@ def get_price(ingredient, store, zipcode, net_store_cost, visited_urls):
         # Loop through each div and find the span element within it
         for div in divs:
             # print(div)
-            spans = div.find_all('span')
-         # If there are at least two span elements, append the text of the second one to the list
-            if len(spans) >= 2:
+            spans = div.find('span' , {'class': 'w_iUH7'})
+            items.append(float(spans.text.split('$')[1]))
 
-                items.append(float(spans[2].text +"." +spans[3].text))
 
         # Print the list of texts
         itemprice = round(min(items),2)
         print(f"Best price for {ingredient.replace('+',' ')} at Walmart is {itemprice}")
-        
         with lock:
         # update the dictionary
             net_store_cost[store].append(itemprice)
@@ -120,18 +145,20 @@ def get_price(ingredient, store, zipcode, net_store_cost, visited_urls):
         driver.quit()
 #---------------------------KROGER----------------------------------------------------------------------------------------
     elif store == "kroger":
-        chrome_options = webdriver.ChromeOptions()
-
-        chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
-        chrome_options.add_experimental_option('useAutomationExtension', False)
-        chrome_options.add_argument('lang=zh-CN,zh,zh-TW,en-US,en')
-        chrome_options.add_argument('--disable-gpu')
-        chrome_options.add_argument("disable-blink-features=AutomationControlled")
-        driver = webdriver.Chrome(options=chrome_options)
+        edge_options = webdriver.EdgeOptions()
+        edge_options.use_chromium = True
+        edge_options.add_argument('lang=zh-CN,zh,zh-TW,en-US,en')
+        edge_options.add_argument('--disable-gpu')
+        edge_options.add_argument("disable-blink-features=AutomationControlled")
+        # edge_options.add_argument("--headless")
+        edge_options.add_argument("--window-size=10,10")
+        driver = webdriver.Edge(options=edge_options)
+        driver.set_window_position(2200, 0)
+        # driver.set_window_position(2000, 0)
         url = "https://www." + store + ".com/search/?query=" + ingredient
         driver.get(url)
         # print("page fetched")
-        time.sleep(5)
+        time.sleep(7)
 
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         prices = []
@@ -144,7 +171,7 @@ def get_price(ingredient, store, zipcode, net_store_cost, visited_urls):
         print(f"Best price found for {ingredient.replace('+',' ')} at {store} is {minprice}\n")
         with lock:
         # update the dictionary
-            net_store_cost[store].append(minprice)
+            net_store_cost[store].append(round(minprice,2))
         
         #Saving url
         visited_urls[url] = True
@@ -155,23 +182,21 @@ def get_price(ingredient, store, zipcode, net_store_cost, visited_urls):
 #---------------------------SAFEWAY----------------------------------------------------------------------------------------
     elif store == "safeway":
         itemprice = 0
-       
-        
-        chrome_options = webdriver.ChromeOptions()
-
-        chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
-        chrome_options.add_experimental_option('useAutomationExtension', False)
-        chrome_options.add_argument('lang=zh-CN,zh,zh-TW,en-US,en')
-        chrome_options.add_argument('--disable-gpu')
-        chrome_options.add_argument("disable-blink-features=AutomationControlled")
-        driver = webdriver.Chrome(options=chrome_options)
+        edge_options = webdriver.EdgeOptions()
+        edge_options.use_chromium = True
+        edge_options.add_argument('lang=zh-CN,zh,zh-TW,en-US,en')
+        edge_options.add_argument('--disable-gpu')
+        edge_options.add_argument("disable-blink-features=AutomationControlled")
+        edge_options.add_argument("--window-size=0,0")
+        driver = webdriver.Edge(options=edge_options)
+        driver.set_window_position(2200, 0)
         
 
         url = "https://www." + store + ".com/shop/search-results.html?q=" + ingredient
         
         driver.get(url)
         
-        time.sleep(8)
+        time.sleep(7)
 
         # Get the HTML content of the page
         html = driver.page_source
@@ -193,7 +218,7 @@ def get_price(ingredient, store, zipcode, net_store_cost, visited_urls):
         print(f"Best price for {ingredient.replace('+',' ')} at safeway is {itemprice}")
         with lock:
         # update the dictionary
-            net_store_cost[store].append(itemprice)
+            net_store_cost[store].append(round(itemprice,2))
         
         #Saving url
         visited_urls[url] = True
@@ -204,43 +229,40 @@ def get_price(ingredient, store, zipcode, net_store_cost, visited_urls):
     elif store == "samsclub":
         itemprice = 0
         
-        chrome_options = webdriver.ChromeOptions()
-
-        chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
-        chrome_options.add_experimental_option('useAutomationExtension', False)
-        chrome_options.add_argument('lang=zh-CN,zh,zh-TW,en-US,en')
-        chrome_options.add_argument('--disable-gpu')
-        chrome_options.add_argument("disable-blink-features=AutomationControlled")
-        driver = webdriver.Chrome(options=chrome_options)
-        
+        edge_options = webdriver.EdgeOptions()
+        edge_options.use_chromium = True
+        edge_options.add_argument('lang=zh-CN,zh,zh-TW,en-US,en')
+        edge_options.add_argument('--disable-gpu')
+        edge_options.add_argument("disable-blink-features=AutomationControlled")
+        edge_options.add_argument("--window-size=0,0")
+        driver = webdriver.Edge(options=edge_options)
+        driver.set_window_position(2200, 0)
 
         url = "https://www." + store + ".com/s/" + ingredient
         #https://www.samsclub.com/s/eggs
-        
+
         driver.get(url)
-        
-        time.sleep(8)
+
+        time.sleep(7)
 
         # Get the HTML content of the page
         html = driver.page_source
-        
+
         soup = BeautifulSoup(html, 'html.parser')
-        
+
         # find the button and click it
         # button = driver.find_element(By.ID, 'onetrust-reject-all-handler')
         # button.click()
 
-        span_tags = soup.find_all('span', attrs={'class': 'visuallyhidden'})
+        span_tags = soup.find_all('span', attrs={'class': 'Price-group'})
         
         
         items = []
         
         # extract and print the text inside each tag
-        for span in soup.find_all('span', {'class': 'Price-characteristic'}):
-            span2 = span.find_next('span', {'class': 'Price-mantissa'})
-            if span2:
-                price = float(span.text + '.' + span2.text)
-                items.append(price)
+        for span in span_tags:
+            pr=span.find('span',attrs={'class':'visuallyhidden'})
+            items.append(float((pr.text.split('$')[1].split('/')[0].replace(',',''))))
         
         
         itemprice = round(min(items),2)
@@ -248,7 +270,7 @@ def get_price(ingredient, store, zipcode, net_store_cost, visited_urls):
         
         with lock:
         # update the dictionary
-            net_store_cost[store].append(itemprice)
+            net_store_cost[store].append(round(itemprice,2))
         
         #Saving url
         visited_urls[url] = True
@@ -269,44 +291,117 @@ def save_visited_urls(urls):
         json.dump(urls, f)
 
 
+#===========================================Added route for urls==========================================
+@app.route('/get-urls')
+def get_urls():
+    visited_urls = load_visited_urls()
+    return jsonify(list(visited_urls.keys()))
+
+
+@app.route('/loading')
+def loading():
+    @copy_current_request_context
+    def process_results():
+        dish = session.get('dish')
+        zipcode = session.get('zipcode')
+        ingredients, image = get_recipe(dish)
+        length = len(ingredients)
+        stores = ["walmart","samsclub","kroger"]
+
+        visited_urls = load_visited_urls()   # Loading visited url's
+
+        threads = []
+        thread_id = 1
+
+        net_store_cost = collections.defaultdict(list)
+
+        for ingredient in ingredients:
+            for store in stores:
+                thread = threading.Thread(target=get_price, args=(ingredient, store, zipcode, net_store_cost,visited_urls), name=str(thread_id))
+                threads.append(thread)
+                print(f"Thread {thread_id} created for getting price of {ingredient} at {store}")
+                thread.start()
+                thread_id += 1
+        for thread in threads:
+            thread.join()
+
+        print(net_store_cost)
+        for s,c in net_store_cost.items():
+            net_store_cost[s] = round(sum(c),2)
+
+        print(net_store_cost)
+        # Store the processed results in the session
+        # session['net_store_cost'] = net_store_cost
+        # session['ingredients'] = ingredients
+        # session['image'] = image
+        # session['length'] = length
+        # session['processing_complete'] = True
+        
+        # Store the processed results in a file
+        with open('results.json', 'w') as f:
+            json.dump({
+                'net_store_cost': net_store_cost,
+                'ingredients': ingredients,
+                'image': image,
+                'length': length,
+                'dish' : dish
+            }, f)
+        
+        # Write a file to indicate that the processing is complete
+        with open('processing_complete.txt', 'w') as f:
+            f.write('True')
+
+        
+
+    # Start the background task
+    Thread(target=process_results).start()
+    
+
+    # Render the loading page
+    return render_template("loading.html")
+
+@app.route('/check_results')
+def check_results():
+    # Check if the processing is complete by checking if the file exists
+    results_ready = os.path.exists('results.json')
+
+    return {'results_ready': results_ready}
+
+
+@app.route('/results')
+def results():
+    # Get the session data from the file
+    with open('results.json', 'r') as f:
+        results = json.load(f)
+
+    net_store_cost = results.get('net_store_cost')
+    ingredients = results.get('ingredients')
+    image = results.get('image')
+    length = results.get('length')
+    dish = results.get('dish')
+
+    # Delete the file
+    if os.path.exists('results.json'):
+        os.remove('results.json')
+
+    # Render the results page with the session data
+    return render_template("results.html", net_store_cost=net_store_cost, ingredients=ingredients, image=image, dish = dish, length=length)
+
 
 
 # def home():
 #     return render_template('index.html')
 @app.route('/submit', methods=['POST','GET'])
 def submit():
-    dish = str(request.form['dish'])
+    # Store the form data in the session
+    session['dish'] = str(request.form['dish'])
+    session['zipcode'] = 30324
 
-    # zipcode = request.form.get('zipcode')
-    zipcode = 30324
-    ingredients = get_recipe(dish)
-    stores = ["walmart" , "safeway", "samsclub","kroger"]
+    # Redirect to the loading page
+    return redirect(url_for('loading'))
 
-    visited_urls = load_visited_urls()   # Loading visited url's
-
-    threads = []
-    thread_id = 1
-
-    net_store_cost = collections.defaultdict(list)
-
-    for ingredient in ingredients:
-        for store in stores:
-            thread = threading.Thread(target=get_price, args=(ingredient, store, zipcode, net_store_cost,visited_urls), name=str(thread_id))
-            threads.append(thread)
-            print(f"Thread {thread_id} created for getting price of {ingredient} at {store}")
-            thread.start()
-            thread_id += 1
-    for thread in threads:
-        thread.join()
-
-    print(net_store_cost)
-    for s,c in net_store_cost.items():
-        net_store_cost[s] = sum(c)
-
-    print(net_store_cost)
-    return render_template("results.html", dish=dish, ingredients=ingredients, net_store_cost=net_store_cost)
 
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=8080)

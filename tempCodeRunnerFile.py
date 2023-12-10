@@ -1,0 +1,1 @@
+return render_template("results.html", dish=dish, ingredients=ingredients, net_store_cost=net_store_cost, image=image)
