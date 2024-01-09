@@ -1,10 +1,8 @@
 <h1>Meal In Budget</h1>
 Meal In Budget is a Multithreaded Web Crawler Application.
 With our innovative idea, you don’t have to worry scanning multiple web sources for finding the ingredients for your favorite recipe or having to worry about your budget. Our application will do it all for you in just a matter of few minutes. 
-
-<img width="700" alt="image" src="https://github.com/Samk104/Meal-In-Budget/assets/71979346/4b496dfc-81ed-4fcb-8ed6-11a50a40196b">
-
 <br>
+<img width="700" alt="image" src="https://github.com/Samk104/Meal-In-Budget/assets/71979346/4b496dfc-81ed-4fcb-8ed6-11a50a40196b">
 <img width="700" alt="image" src="https://github.com/Samk104/Meal-In-Budget/assets/71979346/590f0f53-00aa-4c21-8e62-109850a42ec2">
 <br>
 <h1>Motivation</h1>
