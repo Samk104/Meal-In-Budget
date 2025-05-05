@@ -73,7 +73,6 @@ def get_prices_for_ingredient(
     driver: WebDriver,
     driver_pool  
 ) -> None:
-    logger.info(f"➡️ Entered get_prices_for_ingredient for: {ingredient}")
     if not ingredient or not isinstance(ingredient, str):
         logger.error("Invalid ingredient provided")
         return
