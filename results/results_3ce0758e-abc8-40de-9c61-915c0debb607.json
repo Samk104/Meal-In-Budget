@@ -1,0 +1,18 @@
+{
+  "dish": "cheese pizza",
+  "ingredients": [
+    "unbaked pizza crust",
+    "prepared pesto sauce",
+    "roma tomatoes",
+    "seasoned goat cheese",
+    "garlic",
+    "fresh arugula",
+    "olive oil"
+  ],
+  "image_url": "https://www.allrecipes.com/thmb/ZOxJ-UvwBB4yw3G1IHKpsOcPCrg=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/8057567-a37e1aea3ac245aca36284865e812fc8.jpg",
+  "net_store_cost": {},
+  "progress": {
+    "total": 7,
+    "completed": 7
+  }
+}
