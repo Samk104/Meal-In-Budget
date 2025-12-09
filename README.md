@@ -59,7 +59,7 @@ Follow the steps below to set up and run the project locally.
 
 ### 1. Clone the Repository
 ```
-git clone https://github.com/your-username/Meal-In-Budget.git
+git clone https://github.com/Samk104/Meal-In-Budget.git
 cd Meal-In-Budget
 ```
 
