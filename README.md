@@ -31,14 +31,52 @@ Meal planning often requires deciding what to cook, listing ingredients, and che
 
 ## Technologies Used
 
-- Python  
-- Flask  
-- BeautifulSoup  
-- Selenium (Edge WebDriver)  
-- HTML  
-- CSS  
-- JavaScript  
-- AJAX  
+<table>
+  <tr>
+    <td align="center" width="120">
+      <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" width="50" alt="Python"/><br>
+      Python
+    </td>
+    <td align="center" width="120">
+      <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/flask/flask-original.svg" width="50" alt="Flask"/><br>
+      Flask
+    </td>
+    <td align="center" width="120">
+      <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original.svg" width="50" alt="HTML"/><br>
+      HTML
+    </td>
+    <td align="center" width="120">
+      <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original.svg" width="50" alt="CSS"/><br>
+      CSS
+    </td>
+    <td align="center" width="120">
+      <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" width="50" alt="JavaScript"/><br>
+      JavaScript
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="120">
+      <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/selenium/selenium-original.svg" width="50" alt="Selenium"/><br>
+      Selenium
+    </td>
+    <td align="center" width="120">
+      <img src="https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/microsoftedge.svg" width="50" alt="Edge WebDriver"/><br>
+      Edge WebDriver
+    </td>
+    <td align="center" width="120">
+      <img src="https://www.crummy.com/software/BeautifulSoup/bs4/doc/_static/6.png" width="50" alt="BeautifulSoup"/><br>
+      BeautifulSoup
+    </td>
+    <td align="center" width="120">
+      <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/git/git-original.svg" width="50" alt="Git"/><br>
+      Git
+    </td>
+    <td align="center" width="120">
+      <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/github/github-original.svg" width="50" alt="GitHub"/><br>
+      GitHub
+    </td>
+  </tr>
+</table>
 
 ---
 
