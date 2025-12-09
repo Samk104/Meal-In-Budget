@@ -82,8 +82,8 @@ Place the executable in the project directory, or update the WebDriver path insi
 
 ### 5. Run the Application
 ```
-export FLASK_APP=app.py         # macOS / Linux
-set FLASK_APP=app.py            # Windows
+export FLASK_APP=run.py         # macOS / Linux
+set FLASK_APP=run.py            # Windows
 
 flask run
 ```
